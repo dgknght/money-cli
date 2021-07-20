@@ -1,0 +1,30 @@
+{
+  "name": "money-cli",
+  "version": "1.0.0",
+  "description": "Command line interface for the clj-money project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgknght/money-cli.git"
+  },
+  "keywords": [
+    "accounting",
+    "double-entry",
+    "cli",
+    "command",
+    "line"
+  ],
+  "author": "Doug Knight",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dgknght/money-cli/issues"
+  },
+  "homepage": "https://github.com/dgknght/money-cli#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "figlet": "^1.5.0"
+  }
+}
