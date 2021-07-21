@@ -17,6 +17,11 @@ switch(command) {
     Accounts.exec(args);
     break;
   default:
-    console.log(`unrecognized command "${command}"`);
+    if (typeof command === 'undefined') {
+      console.log('No command was given');
+    } else {
+      console.log(`unrecognized command "${command}"`);
+    }
+    About.help();
 };
 
