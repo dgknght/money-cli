@@ -2,6 +2,7 @@
   "name": "money-cli",
   "version": "1.0.0",
   "description": "Command line interface for the clj-money project",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,7 +28,9 @@
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
     "clui": "^0.3.6",
+    "configstore": "^6.0.0",
     "figlet": "^1.5.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "netrc": "^0.1.4"
   }
 }

@@ -1,27 +1,29 @@
-const parseArgs = require ('minimist')
+import parseArgs from 'minimist';
 
-const About = require('./lib/about');
-const Accounts = require('./lib/accounts');
+import About from './lib/about.js';
+import accounts from './lib/accounts.js';
+import config from './lib/config.js';
+import auth from './lib/authentication.js'
 
 const args = parseArgs(process.argv);
 const command = args._[2]
 
-switch(command) {
-  case 'about':
-    About.about();
-    break;
-  case 'help':
-    About.help();
-    break;
-  case 'account':
-    Accounts.exec(args);
-    break;
-  default:
-    if (typeof command === 'undefined') {
-      console.log('No command was given');
-    } else {
-      console.log(`unrecognized command "${command}"`);
-    }
-    About.help();
+const handlers = {
+  'account': accounts,
+  'auth': auth,
+  'config': config,
+  'about': About.about,
+  'help': About.help
 };
 
+const handler = handlers[command];
+if (handler != null) {
+  handler(args);
+} else {
+  if (typeof command === 'undefined') {
+    console.log('No command was given');
+  } else {
+    console.log(`unrecognized command "${command}"`);
+  }
+  About.help();
+}
