@@ -1,29 +1,27 @@
-import parseArgs from 'minimist';
+#!/usr/bin/env node
 
 import About from './lib/about.js';
 import accounts from './lib/accounts.js';
 import config from './lib/config.js';
 import auth from './lib/authentication.js'
+import reports from './lib/reports.js';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-const args = parseArgs(process.argv);
-const command = args._[2]
-
-const handlers = {
-  'account': accounts,
-  'auth': auth,
-  'config': config,
-  'about': About.about,
-  'help': About.help
-};
-
-const handler = handlers[command];
-if (handler != null) {
-  handler(args);
-} else {
-  if (typeof command === 'undefined') {
-    console.log('No command was given');
-  } else {
-    console.log(`unrecognized command "${command}"`);
-  }
-  About.help();
-}
+const parser = yargs(hideBin(process.argv))
+  .usage('$0 <command> [<subcommand> [<args>]]')
+  .scriptName('money')
+  .help();
+parser.command(
+  'about',
+  'Get information about the application and the developer.',
+  {},
+  About.about
+);
+[
+  accounts,
+  auth,
+  config,
+  reports
+].forEach(m => m(parser));
+parser.argv
