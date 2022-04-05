@@ -5,3 +5,9 @@ A command line interface to clj-money.
 ```bash
 money account balance -a Checking
 ```
+
+## Development Usage
+```bash
+node . account balance -a Checking
+node . --help
+```
