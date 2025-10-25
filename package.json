@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -33,5 +34,8 @@
     "figlet": "^1.5.0",
     "netrc": "^0.1.4",
     "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.3"
   }
 }

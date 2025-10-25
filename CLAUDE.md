@@ -119,3 +119,6 @@ Color coding with chalk:
 
 3. **Error handling**: Most commands use `.catch()` to log errors to console
    rather than allowing stack traces to propagate
+
+## General Guidelines
+- Unit tests should always pass.
