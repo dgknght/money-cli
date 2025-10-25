@@ -54,13 +54,13 @@ Authentication uses `.netrc` for token storage:
 Uses `configstore` package for persistent configuration:
 - Config stored in system-specific location managed by configstore
 - Required config: `apiBaseUri` (API base URL)
-- Optional config: `lastUsedEntityId` (auto-set by entity resolution)
+- Optional config: `currentEntityId` (auto-set by entity resolution)
 - Access via `config.get()`, `config.set()`, or `getOrThrow()` (throws if missing)
 
 ### Entity Resolution
 
 The `fetchEntityId()` function in `lib/entities.js` handles entity lookup:
-- If no entity name provided, uses `lastUsedEntityId` from config
+- If no entity name provided, uses `currentEntityId` from config
 - Otherwise fetches all entities from API and finds match by name
 - Stores resolved entity ID in config for future use
 - This allows omitting entity argument after first use
