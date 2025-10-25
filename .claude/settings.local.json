@@ -9,7 +9,8 @@
       "Bash(node . entity-select \"Large 1\")",
       "Bash(node . entity-show)",
       "Bash(git grep -i \"lastusedentityid\")",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm test)"
     ],
     "deny": [],
     "ask": []
