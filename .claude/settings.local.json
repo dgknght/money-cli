@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node . --help)",
+      "Bash(node . entity-list --help)",
+      "Bash(node . entity-list)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
