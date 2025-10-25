@@ -12,7 +12,8 @@
       "Bash(find:*)",
       "Bash(npm test)",
       "Bash(cat .github/workflows/test.yml)",
-      "Bash(cat .github/workflows/ci.yml)"
+      "Bash(cat .github/workflows/ci.yml)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

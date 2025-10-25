@@ -122,3 +122,4 @@ Color coding with chalk:
 
 ## General Guidelines
 - Unit tests should always pass.
+- All linter errors and warnings should be resolved.
