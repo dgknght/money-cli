@@ -3,7 +3,10 @@
     "allow": [
       "Bash(node . --help)",
       "Bash(node . entity-list --help)",
-      "Bash(node . entity-list)"
+      "Bash(node . entity-list)",
+      "Bash(node . entity-select \"Small 1\")",
+      "Bash(node . config)",
+      "Bash(node . entity-select \"Large 1\")"
     ],
     "deny": [],
     "ask": []
