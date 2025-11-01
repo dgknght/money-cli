@@ -121,6 +121,7 @@ Color coding with chalk:
    rather than allowing stack traces to propagate
 
 ## General Guidelines
+- Aim for high test coverage. Don't add new code without adding new tests.
 - Unit tests should always pass.
 - All linter errors and warnings should be resolved.
 - Do not use the word "should" in test assertions. State the expected behavior

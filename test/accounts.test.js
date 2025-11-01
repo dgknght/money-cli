@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fetchAccountByPath, fetchAccountId } from '../lib/accounts.js';
+import { fetchAccountByPath, fetchAccountId, buildQualifiedName, groupAndSortAccounts } from '../lib/accounts.js';
 
 // Mock the dependencies
 vi.mock('axios');
@@ -113,6 +113,150 @@ describe('accounts', () => {
 
       await expect(fetchAccountId('Invalid', 1))
         .rejects.toThrow('No account found with name "Invalid"');
+    });
+  });
+
+  describe('buildQualifiedName', () => {
+    it('returns simple name for account with no parent', () => {
+      const account = { id: 1, name: 'Checking', parent_id: null };
+      const accountsById = { 1: account };
+
+      const result = buildQualifiedName(account, accountsById);
+
+      expect(result).toBe('Checking');
+    });
+
+    it('returns qualified name for account with one parent', () => {
+      const parentAccount = { id: 1, name: 'Assets', parent_id: null };
+      const childAccount = { id: 2, name: 'Checking', parent_id: 1 };
+      const accountsById = {
+        1: parentAccount,
+        2: childAccount
+      };
+
+      const result = buildQualifiedName(childAccount, accountsById);
+
+      expect(result).toBe('Assets/Checking');
+    });
+
+    it('returns qualified name for account with multiple parents', () => {
+      const grandparent = { id: 1, name: 'Assets', parent_id: null };
+      const parent = { id: 2, name: 'Bank', parent_id: 1 };
+      const child = { id: 3, name: 'Checking', parent_id: 2 };
+      const accountsById = {
+        1: grandparent,
+        2: parent,
+        3: child
+      };
+
+      const result = buildQualifiedName(child, accountsById);
+
+      expect(result).toBe('Assets/Bank/Checking');
+    });
+
+    it('handles account with undefined parent_id gracefully', () => {
+      const account = { id: 1, name: 'Savings' };
+      const accountsById = { 1: account };
+
+      const result = buildQualifiedName(account, accountsById);
+
+      expect(result).toBe('Savings');
+    });
+  });
+
+  describe('groupAndSortAccounts', () => {
+    it('groups accounts by type in correct order', () => {
+      const accounts = [
+        { id: 1, name: 'Groceries', type: 'expense', parent_id: null },
+        { id: 2, name: 'Checking', type: 'asset', parent_id: null },
+        { id: 3, name: 'Salary', type: 'income', parent_id: null },
+        { id: 4, name: 'Credit Card', type: 'liability', parent_id: null },
+        { id: 5, name: 'Opening Balances', type: 'equity', parent_id: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(5);
+      expect(result[0].type).toBe('asset');
+      expect(result[1].type).toBe('liability');
+      expect(result[2].type).toBe('equity');
+      expect(result[3].type).toBe('income');
+      expect(result[4].type).toBe('expense');
+    });
+
+    it('sorts accounts alphabetically within each group', () => {
+      const accounts = [
+        { id: 1, name: 'Savings', type: 'asset', parent_id: null },
+        { id: 2, name: 'Checking', type: 'asset', parent_id: null },
+        { id: 3, name: 'Groceries', type: 'expense', parent_id: null },
+        { id: 4, name: 'Utilities', type: 'expense', parent_id: null },
+        { id: 5, name: 'Dining', type: 'expense', parent_id: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].type).toBe('asset');
+      expect(result[0].accounts).toEqual(['Checking', 'Savings']);
+      expect(result[1].type).toBe('expense');
+      expect(result[1].accounts).toEqual(['Dining', 'Groceries', 'Utilities']);
+    });
+
+    it('handles accounts with qualified names', () => {
+      const accounts = [
+        { id: 1, name: 'Assets', type: 'asset', parent_id: null },
+        { id: 2, name: 'Bank', type: 'asset', parent_id: 1 },
+        { id: 3, name: 'Checking', type: 'asset', parent_id: 2 },
+        { id: 4, name: 'Savings', type: 'asset', parent_id: 2 }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe('asset');
+      expect(result[0].accounts).toEqual([
+        'Assets',
+        'Assets/Bank',
+        'Assets/Bank/Checking',
+        'Assets/Bank/Savings'
+      ]);
+    });
+
+    it('omits empty type groups', () => {
+      const accounts = [
+        { id: 1, name: 'Checking', type: 'asset', parent_id: null },
+        { id: 2, name: 'Groceries', type: 'expense', parent_id: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].type).toBe('asset');
+      expect(result[1].type).toBe('expense');
+    });
+
+    it('handles mixed case account types', () => {
+      const accounts = [
+        { id: 1, name: 'Checking', type: 'Asset', parent_id: null },
+        { id: 2, name: 'Savings', type: 'ASSET', parent_id: null },
+        { id: 3, name: 'Groceries', type: 'Expense', parent_id: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].type).toBe('asset');
+      expect(result[0].accounts).toEqual(['Checking', 'Savings']);
+      expect(result[1].type).toBe('expense');
+      expect(result[1].accounts).toEqual(['Groceries']);
+    });
+
+    it('handles empty account list', () => {
+      const accounts = [];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toEqual([]);
     });
   });
 });
