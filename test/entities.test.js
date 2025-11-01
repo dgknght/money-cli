@@ -24,11 +24,11 @@ describe('entities', () => {
   });
 
   describe('fetchEntities', () => {
-    it('should fetch entities from the API', async () => {
+    it('fetches entities from the API', async () => {
       const { default: http } = await import('axios');
       const mockEntities = [
-        { 'entity/name': 'Entity 1', id: 1 },
-        { 'entity/name': 'Entity 2', id: 2 }
+        { name: 'Entity 1', id: 1 },
+        { name: 'Entity 2', id: 2 }
       ];
 
       http.mockResolvedValue({ data: mockEntities });
@@ -40,7 +40,8 @@ describe('entities', () => {
         url: 'http://test.example.com/api/entities',
         method: 'get',
         headers: {
-          'Authorization': 'Bearer test-token'
+          'Authorization': 'Bearer test-token',
+          'Accept': 'application/json'
         }
       });
     });
@@ -54,7 +55,7 @@ describe('entities', () => {
   });
 
   describe('fetchEntityId', () => {
-    it('should return currentEntityId from config when no entity name provided', async () => {
+    it('returns currentEntityId from config when no entity name provided', async () => {
       const { getOrThrow } = await import('../lib/config.js');
 
       const result = await fetchEntityId(null);
@@ -63,13 +64,13 @@ describe('entities', () => {
       expect(getOrThrow).toHaveBeenCalledWith('currentEntityId');
     });
 
-    it('should fetch and return entity ID by name', async () => {
+    it('fetches and returns the ID of the named entity', async () => {
       const { default: http } = await import('axios');
       const { config } = await import('../lib/config.js');
 
       const mockEntities = [
-        { 'entity/name': 'Test Entity', id: 99 },
-        { 'entity/name': 'Other Entity', id: 88 }
+        { name: 'Test Entity', id: 99 },
+        { name: 'Other Entity', id: 88 }
       ];
 
       http.mockResolvedValue({ data: mockEntities });
@@ -80,11 +81,11 @@ describe('entities', () => {
       expect(config.set).toHaveBeenCalledWith('currentEntityId', 99);
     });
 
-    it('should throw error if entity not found by name', async () => {
+    it('throws an error if entity not found by name', async () => {
       const { default: http } = await import('axios');
 
       const mockEntities = [
-        { 'entity/name': 'Test Entity', id: 99 }
+        { name: 'Test Entity', id: 99 }
       ];
 
       http.mockResolvedValue({ data: mockEntities });
