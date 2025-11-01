@@ -259,5 +259,51 @@ describe('accounts', () => {
 
       expect(result).toEqual([]);
     });
+
+    it('filters accounts by maxDepth', () => {
+      const accounts = [
+        { id: 1, name: 'Assets', type: 'asset', parent: null },
+        { id: 2, name: 'Bank', type: 'asset', parent: { id: 1 } },
+        { id: 3, name: 'Checking', type: 'asset', parent: { id: 2 } },
+        { id: 4, name: 'Groceries', type: 'expense', parent: null },
+        { id: 5, name: 'Dining', type: 'expense', parent: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts, 2);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].type).toBe('asset');
+      expect(result[0].accounts).toEqual(['Assets', 'Assets/Bank']);
+      expect(result[1].type).toBe('expense');
+      expect(result[1].accounts).toEqual(['Dining', 'Groceries']);
+    });
+
+    it('ignores maxDepth when not provided', () => {
+      const accounts = [
+        { id: 1, name: 'Assets', type: 'asset', parent: null },
+        { id: 2, name: 'Bank', type: 'asset', parent: { id: 1 } },
+        { id: 3, name: 'Checking', type: 'asset', parent: { id: 2 } }
+      ];
+
+      const result = groupAndSortAccounts(accounts);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].accounts).toHaveLength(3);
+    });
+
+    it('includes only root accounts when maxDepth is 1', () => {
+      const accounts = [
+        { id: 1, name: 'Assets', type: 'asset', parent: null },
+        { id: 2, name: 'Bank', type: 'asset', parent: { id: 1 } },
+        { id: 3, name: 'Checking', type: 'asset', parent: { id: 2 } },
+        { id: 4, name: 'Expenses', type: 'expense', parent: null }
+      ];
+
+      const result = groupAndSortAccounts(accounts, 1);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].accounts).toEqual(['Assets']);
+      expect(result[1].accounts).toEqual(['Expenses']);
+    });
   });
 });

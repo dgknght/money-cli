@@ -13,3 +13,4 @@
     - Income
     - Expense
 - An authenticated user can view the accounts in a specified entity.
+- The level of nesting can be limited with an option.
