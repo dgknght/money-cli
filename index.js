@@ -4,6 +4,7 @@ import About from './lib/about.js';
 import accounts from './lib/accounts.js';
 import config from './lib/config.js';
 import auth from './lib/authentication.js'
+import entities from './lib/entities.js';
 import reports from './lib/reports.js';
 import transactions from './lib/transactions.js';
 import yargs from 'yargs';
@@ -23,6 +24,7 @@ parser.command(
   accounts,
   auth,
   config,
+  entities,
   reports,
   transactions
 ].forEach(m => m(parser));
