@@ -8,7 +8,8 @@
       "Bash(node . config)",
       "Bash(node . entity-select \"Large 1\")",
       "Bash(node . entity-show)",
-      "Bash(git grep -i \"lastusedentityid\")"
+      "Bash(git grep -i \"lastusedentityid\")",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
