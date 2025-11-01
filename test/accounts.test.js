@@ -36,7 +36,8 @@ describe('accounts', () => {
         url: 'http://test.example.com/api/entities/1/accounts',
         method: 'get',
         headers: {
-          'Authorization': 'Bearer test-token'
+          'Authorization': 'Bearer test-token',
+          'Accept': 'application/json'
         },
         params: { name: 'Checking' }
       });
@@ -118,7 +119,7 @@ describe('accounts', () => {
 
   describe('buildQualifiedName', () => {
     it('returns simple name for account with no parent', () => {
-      const account = { id: 1, name: 'Checking', parent_id: null };
+      const account = { id: 1, name: 'Checking', parent: null };
       const accountsById = { 1: account };
 
       const result = buildQualifiedName(account, accountsById);
@@ -127,8 +128,8 @@ describe('accounts', () => {
     });
 
     it('returns qualified name for account with one parent', () => {
-      const parentAccount = { id: 1, name: 'Assets', parent_id: null };
-      const childAccount = { id: 2, name: 'Checking', parent_id: 1 };
+      const parentAccount = { id: 1, name: 'Assets', parent: null };
+      const childAccount = { id: 2, name: 'Checking', parent: { id: 1 } };
       const accountsById = {
         1: parentAccount,
         2: childAccount
@@ -140,9 +141,9 @@ describe('accounts', () => {
     });
 
     it('returns qualified name for account with multiple parents', () => {
-      const grandparent = { id: 1, name: 'Assets', parent_id: null };
-      const parent = { id: 2, name: 'Bank', parent_id: 1 };
-      const child = { id: 3, name: 'Checking', parent_id: 2 };
+      const grandparent = { id: 1, name: 'Assets', parent: null };
+      const parent = { id: 2, name: 'Bank', parent: { id: 1 } };
+      const child = { id: 3, name: 'Checking', parent: { id: 2 } };
       const accountsById = {
         1: grandparent,
         2: parent,
@@ -154,7 +155,7 @@ describe('accounts', () => {
       expect(result).toBe('Assets/Bank/Checking');
     });
 
-    it('handles account with undefined parent_id gracefully', () => {
+    it('handles account with undefined parentId gracefully', () => {
       const account = { id: 1, name: 'Savings' };
       const accountsById = { 1: account };
 
@@ -167,11 +168,11 @@ describe('accounts', () => {
   describe('groupAndSortAccounts', () => {
     it('groups accounts by type in correct order', () => {
       const accounts = [
-        { id: 1, name: 'Groceries', type: 'expense', parent_id: null },
-        { id: 2, name: 'Checking', type: 'asset', parent_id: null },
-        { id: 3, name: 'Salary', type: 'income', parent_id: null },
-        { id: 4, name: 'Credit Card', type: 'liability', parent_id: null },
-        { id: 5, name: 'Opening Balances', type: 'equity', parent_id: null }
+        { id: 1, name: 'Groceries', type: 'expense', parent: null },
+        { id: 2, name: 'Checking', type: 'asset', parent: null },
+        { id: 3, name: 'Salary', type: 'income', parent: null },
+        { id: 4, name: 'Credit Card', type: 'liability', parent: null },
+        { id: 5, name: 'Opening Balances', type: 'equity', parent: null }
       ];
 
       const result = groupAndSortAccounts(accounts);
@@ -186,11 +187,11 @@ describe('accounts', () => {
 
     it('sorts accounts alphabetically within each group', () => {
       const accounts = [
-        { id: 1, name: 'Savings', type: 'asset', parent_id: null },
-        { id: 2, name: 'Checking', type: 'asset', parent_id: null },
-        { id: 3, name: 'Groceries', type: 'expense', parent_id: null },
-        { id: 4, name: 'Utilities', type: 'expense', parent_id: null },
-        { id: 5, name: 'Dining', type: 'expense', parent_id: null }
+        { id: 1, name: 'Savings', type: 'asset', parent: null },
+        { id: 2, name: 'Checking', type: 'asset', parent: null },
+        { id: 3, name: 'Groceries', type: 'expense', parent: null },
+        { id: 4, name: 'Utilities', type: 'expense', parent: null },
+        { id: 5, name: 'Dining', type: 'expense', parent: null }
       ];
 
       const result = groupAndSortAccounts(accounts);
@@ -204,10 +205,10 @@ describe('accounts', () => {
 
     it('handles accounts with qualified names', () => {
       const accounts = [
-        { id: 1, name: 'Assets', type: 'asset', parent_id: null },
-        { id: 2, name: 'Bank', type: 'asset', parent_id: 1 },
-        { id: 3, name: 'Checking', type: 'asset', parent_id: 2 },
-        { id: 4, name: 'Savings', type: 'asset', parent_id: 2 }
+        { id: 1, name: 'Assets', type: 'asset', parent: null },
+        { id: 2, name: 'Bank', type: 'asset', parent: { id: 1 } },
+        { id: 3, name: 'Checking', type: 'asset', parent: { id: 2 } },
+        { id: 4, name: 'Savings', type: 'asset', parent: { id: 2 } }
       ];
 
       const result = groupAndSortAccounts(accounts);
@@ -224,8 +225,8 @@ describe('accounts', () => {
 
     it('omits empty type groups', () => {
       const accounts = [
-        { id: 1, name: 'Checking', type: 'asset', parent_id: null },
-        { id: 2, name: 'Groceries', type: 'expense', parent_id: null }
+        { id: 1, name: 'Checking', type: 'asset', parent: null },
+        { id: 2, name: 'Groceries', type: 'expense', parent: null }
       ];
 
       const result = groupAndSortAccounts(accounts);
@@ -237,9 +238,9 @@ describe('accounts', () => {
 
     it('handles mixed case account types', () => {
       const accounts = [
-        { id: 1, name: 'Checking', type: 'Asset', parent_id: null },
-        { id: 2, name: 'Savings', type: 'ASSET', parent_id: null },
-        { id: 3, name: 'Groceries', type: 'Expense', parent_id: null }
+        { id: 1, name: 'Checking', type: 'Asset', parent: null },
+        { id: 2, name: 'Savings', type: 'ASSET', parent: null },
+        { id: 3, name: 'Groceries', type: 'Expense', parent: null }
       ];
 
       const result = groupAndSortAccounts(accounts);
